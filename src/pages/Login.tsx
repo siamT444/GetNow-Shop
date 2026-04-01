@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { auth, googleProvider, signInWithPopup, onAuthStateChanged } from '../firebase';
-import { LogIn, ShoppingCart, ShieldCheck, Zap, ArrowRight } from 'lucide-react';
+import { LogIn, ShoppingCart, ShieldCheck, Zap, ArrowRight, AlertCircle } from 'lucide-react';
 import { motion } from 'motion/react';
 
 export default function Login() {
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
   const location = useLocation();
   const from = (location.state as any)?.from?.pathname || "/";
@@ -21,10 +22,18 @@ export default function Login() {
 
   const handleLogin = async () => {
     setLoading(true);
+    setError(null);
     try {
       await signInWithPopup(auth, googleProvider);
-    } catch (error) {
-      console.error("Login failed", error);
+    } catch (err: any) {
+      console.error("Login failed", err);
+      if (err.code === 'auth/popup-blocked') {
+        setError("The sign-in popup was blocked by your browser. Please allow popups for this site.");
+      } else if (err.code === 'auth/unauthorized-domain') {
+        setError("This domain is not authorized in Firebase. Please add this domain to your Firebase Auth settings.");
+      } else {
+        setError(err.message || "An unexpected error occurred during sign-in.");
+      }
     } finally {
       setLoading(false);
     }
@@ -48,6 +57,13 @@ export default function Login() {
 
         <h1 className="text-3xl font-black text-gray-900 mb-4">Welcome Back!</h1>
         <p className="text-gray-500 mb-10">Sign in to unlock exclusive deals, save your favorite products, and manage your account.</p>
+
+        {error && (
+          <div className="mb-6 p-4 bg-red-50 border border-red-100 rounded-xl text-red-600 text-sm font-medium flex items-start text-left">
+            <AlertCircle className="h-5 w-5 mr-2 flex-shrink-0" />
+            {error}
+          </div>
+        )}
 
         <div className="space-y-6 mb-10">
           <div className="flex items-start space-x-4 text-left">
