@@ -1,8 +1,24 @@
+import React, { useState, useEffect } from 'react';
 import { Star, Check, X, ExternalLink } from 'lucide-react';
-import { PRODUCTS } from '../constants';
+import { db, collection, onSnapshot } from '../firebase';
+import { Product } from '../types';
 
 export default function Comparison() {
-  const techProducts = PRODUCTS.filter(p => p.category === 'Tech Gadgets' || p.category === 'Smart Accessories');
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const unsubscribe = onSnapshot(collection(db, 'products'), (snapshot) => {
+      const prods = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product));
+      setProducts(prods);
+      setLoading(false);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  const techProducts = products.filter(p => p.category === 'Tech Gadgets' || p.category === 'Smart Accessories');
+
+  if (loading) return <div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500"></div></div>;
 
   return (
     <div className="bg-white py-20">

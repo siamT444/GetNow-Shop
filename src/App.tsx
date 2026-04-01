@@ -7,6 +7,8 @@ import Categories from './pages/Categories';
 import CategoryDetail from './pages/CategoryDetail';
 import Deals from './pages/Deals';
 import Comparison from './pages/Comparison';
+import Admin from './pages/Admin';
+import Login from './pages/Login';
 
 export default function App() {
   return (
@@ -21,6 +23,8 @@ export default function App() {
             <Route path="/category/:slug" element={<CategoryDetail />} />
             <Route path="/deals" element={<Deals />} />
             <Route path="/comparison" element={<Comparison />} />
+            <Route path="/admin" element={<Admin />} />
+            <Route path="/login" element={<Login />} />
             <Route path="/trending" element={<Home />} />
             <Route path="/blog" element={<Home />} />
             <Route path="/about" element={<Home />} />

@@ -1,13 +1,29 @@
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { PRODUCTS, CATEGORIES } from '../constants';
+import { CATEGORIES } from '../constants';
+import { db, collection, onSnapshot, query, where } from '../firebase';
+import { Product } from '../types';
 import ProductCard from '../components/ProductCard';
 
 export default function CategoryDetail() {
   const { slug } = useParams();
   const category = CATEGORIES.find(c => c.slug === slug);
-  const products = PRODUCTS.filter(p => p.category === category?.name);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!category) return;
+    const q = query(collection(db, 'products'), where('category', '==', category.name));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const prods = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product));
+      setProducts(prods);
+      setLoading(false);
+    });
+    return () => unsubscribe();
+  }, [category]);
 
   if (!category) return null;
+  if (loading) return <div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500"></div></div>;
 
   return (
     <div className="bg-white py-20">

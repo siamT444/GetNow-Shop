@@ -1,11 +1,29 @@
+import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Star, Check, X, ShoppingCart, ArrowLeft, ExternalLink, Info, MessageSquare, AlertCircle } from 'lucide-react';
-import { PRODUCTS } from '../constants';
+import { db, doc, onSnapshot } from '../firebase';
+import { Product } from '../types';
 import { cn } from '../lib/utils';
 
 export default function ProductDetail() {
   const { id } = useParams();
-  const product = PRODUCTS.find(p => p.id === id);
+  const [product, setProduct] = useState<Product | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!id) return;
+    const unsubscribe = onSnapshot(doc(db, 'products', id), (docSnap) => {
+      if (docSnap.exists()) {
+        setProduct({ id: docSnap.id, ...docSnap.data() } as Product);
+      } else {
+        setProduct(null);
+      }
+      setLoading(false);
+    });
+    return () => unsubscribe();
+  }, [id]);
+
+  if (loading) return <div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500"></div></div>;
 
   if (!product) {
     return (

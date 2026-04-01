@@ -1,9 +1,24 @@
-import { PRODUCTS } from '../constants';
+import React, { useState, useEffect } from 'react';
+import { db, collection, onSnapshot, query, where } from '../firebase';
+import { Product } from '../types';
 import ProductCard from '../components/ProductCard';
 import { Clock } from 'lucide-react';
 
 export default function Deals() {
-  const dealProducts = PRODUCTS.filter(p => p.isDeal);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const q = query(collection(db, 'products'), where('isDeal', '==', true));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const prods = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product));
+      setProducts(prods);
+      setLoading(false);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  if (loading) return <div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500"></div></div>;
 
   return (
     <div className="bg-white py-20">
@@ -20,7 +35,7 @@ export default function Deals() {
         </div>
 
         <div className="grid grid-cols-1 gap-8">
-          {dealProducts.map(product => (
+          {products.map(product => (
             <ProductCard key={product.id} product={product} variant="horizontal" />
           ))}
         </div>

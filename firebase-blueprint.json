@@ -1,0 +1,48 @@
+{
+  "entities": {
+    "Product": {
+      "title": "Product",
+      "description": "A product listed on the affiliate store.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "The name of the product." },
+        "category": { "type": "string", "description": "The category of the product." },
+        "image": { "type": "string", "description": "The URL of the product image." },
+        "price": { "type": "string", "description": "The price of the product." },
+        "rating": { "type": "number", "description": "The rating of the product." },
+        "reviewsCount": { "type": "number", "description": "The number of reviews." },
+        "benefit": { "type": "string", "description": "A short benefit description." },
+        "features": { "type": "array", "items": { "type": "string" }, "description": "A list of key features." },
+        "pros": { "type": "array", "items": { "type": "string" }, "description": "A list of pros." },
+        "cons": { "type": "array", "items": { "type": "string" }, "description": "A list of cons." },
+        "amazonUrl": { "type": "string", "description": "The Amazon affiliate link." },
+        "description": { "type": "string", "description": "A detailed description." },
+        "isTrending": { "type": "boolean", "description": "Whether the product is trending." },
+        "isDeal": { "type": "boolean", "description": "Whether the product is a deal." },
+        "discount": { "type": "string", "description": "The discount amount." }
+      },
+      "required": ["name", "category", "image", "price", "amazonUrl", "description"]
+    },
+    "User": {
+      "title": "User",
+      "description": "A user of the application, potentially an admin.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string" },
+        "role": { "type": "string", "enum": ["admin", "user"] }
+      },
+      "required": ["uid", "email", "role"]
+    }
+  },
+  "firestore": {
+    "/products/{productId}": {
+      "schema": "Product",
+      "description": "Collection of products."
+    },
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "Collection of users and their roles."
+    }
+  }
+}

@@ -1,13 +1,28 @@
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Zap, ShieldCheck, TrendingUp, Clock, Star, CheckCircle2 } from 'lucide-react';
 import { motion } from 'motion/react';
-import { CATEGORIES, PRODUCTS } from '../constants';
+import { CATEGORIES } from '../constants';
+import { db, collection, onSnapshot } from '../firebase';
+import { Product } from '../types';
 import ProductCard from '../components/ProductCard';
 import * as Icons from 'lucide-react';
 
 export default function Home() {
-  const trendingProducts = PRODUCTS.filter(p => p.isTrending);
-  const dealProducts = PRODUCTS.filter(p => p.isDeal);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const unsubscribe = onSnapshot(collection(db, 'products'), (snapshot) => {
+      const prods = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product));
+      setProducts(prods);
+      setLoading(false);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  const trendingProducts = products.filter(p => p.isTrending);
+  const dealProducts = products.filter(p => p.isDeal);
 
   return (
     <div className="flex flex-col w-full">
