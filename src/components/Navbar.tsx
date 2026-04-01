@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ShoppingCart, Search, Menu, X, User as UserIcon, LogOut, Shield, LogIn } from 'lucide-react';
-import { auth, googleProvider, signInWithPopup, signOut, onAuthStateChanged, User, db, doc, getDoc, setDoc } from '../firebase';
+import { auth, googleProvider, signInWithPopup, signOut, onAuthStateChanged, User, db, doc, getDoc, setDoc, handleFirestoreError, OperationType } from '../firebase';
 import { cn } from '../lib/utils';
 
 export default function Navbar() {
@@ -23,7 +23,11 @@ export default function Navbar() {
             email: currentUser.email,
             role: currentUser.email === "mdsiamsadik22@gmail.com" ? 'admin' : 'user'
           };
-          await setDoc(userRef, newUser);
+          try {
+            await setDoc(userRef, newUser);
+          } catch (error) {
+            handleFirestoreError(error, OperationType.WRITE, `users/${currentUser.uid}`);
+          }
           if (newUser.role === 'admin') setIsAdmin(true);
         } else {
           if (userSnap.data().role === 'admin') setIsAdmin(true);

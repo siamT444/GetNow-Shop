@@ -2,30 +2,29 @@
   "entities": {
     "Product": {
       "title": "Product",
-      "description": "A product listed on the affiliate store.",
+      "description": "A product listed in the store with affiliate links.",
       "type": "object",
       "properties": {
-        "name": { "type": "string", "description": "The name of the product." },
-        "category": { "type": "string", "description": "The category of the product." },
-        "image": { "type": "string", "description": "The URL of the product image." },
-        "price": { "type": "string", "description": "The price of the product." },
-        "rating": { "type": "number", "description": "The rating of the product." },
-        "reviewsCount": { "type": "number", "description": "The number of reviews." },
-        "benefit": { "type": "string", "description": "A short benefit description." },
-        "features": { "type": "array", "items": { "type": "string" }, "description": "A list of key features." },
-        "pros": { "type": "array", "items": { "type": "string" }, "description": "A list of pros." },
-        "cons": { "type": "array", "items": { "type": "string" }, "description": "A list of cons." },
-        "amazonUrl": { "type": "string", "description": "The Amazon affiliate link." },
-        "description": { "type": "string", "description": "A detailed description." },
-        "isTrending": { "type": "boolean", "description": "Whether the product is trending." },
-        "isDeal": { "type": "boolean", "description": "Whether the product is a deal." },
-        "discount": { "type": "string", "description": "The discount amount." }
+        "id": { "type": "string" },
+        "name": { "type": "string", "description": "Product name" },
+        "category": { "type": "string", "description": "Product category" },
+        "price": { "type": "string", "description": "Current price" },
+        "amazonUrl": { "type": "string", "description": "Affiliate link" },
+        "image": { "type": "string", "description": "Product image URL" },
+        "description": { "type": "string", "description": "Detailed review/description" },
+        "benefit": { "type": "string", "description": "Short benefit highlight" },
+        "rating": { "type": "number", "description": "Star rating (0-5)" },
+        "reviewsCount": { "type": "number", "description": "Number of reviews" },
+        "isTrending": { "type": "boolean" },
+        "isDeal": { "type": "boolean" },
+        "pros": { "type": "array", "items": { "type": "string" } },
+        "cons": { "type": "array", "items": { "type": "string" } }
       },
-      "required": ["name", "category", "image", "price", "amazonUrl", "description"]
+      "required": ["name", "category", "price", "amazonUrl", "image", "description"]
     },
     "User": {
       "title": "User",
-      "description": "A user of the application, potentially an admin.",
+      "description": "A registered user of the store.",
       "type": "object",
       "properties": {
         "uid": { "type": "string" },
@@ -38,11 +37,11 @@
   "firestore": {
     "/products/{productId}": {
       "schema": "Product",
-      "description": "Collection of products."
+      "description": "Collection of products available in the store."
     },
     "/users/{userId}": {
       "schema": "User",
-      "description": "Collection of users and their roles."
+      "description": "User profiles and roles."
     }
   }
 }

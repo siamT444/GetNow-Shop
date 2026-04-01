@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, Zap, ShieldCheck, TrendingUp, Clock, Star, CheckCircle2 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { CATEGORIES } from '../constants';
-import { db, collection, onSnapshot } from '../firebase';
+import { db, collection, onSnapshot, handleFirestoreError, OperationType } from '../firebase';
 import { Product } from '../types';
 import ProductCard from '../components/ProductCard';
 import * as Icons from 'lucide-react';
@@ -17,6 +17,8 @@ export default function Home() {
       const prods = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product));
       setProducts(prods);
       setLoading(false);
+    }, (error) => {
+      handleFirestoreError(error, OperationType.LIST, 'products');
     });
     return () => unsubscribe();
   }, []);

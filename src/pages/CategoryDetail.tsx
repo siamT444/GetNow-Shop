@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { CATEGORIES } from '../constants';
-import { db, collection, onSnapshot, query, where } from '../firebase';
+import { db, collection, onSnapshot, query, where, handleFirestoreError, OperationType } from '../firebase';
 import { Product } from '../types';
 import ProductCard from '../components/ProductCard';
 
@@ -18,6 +18,8 @@ export default function CategoryDetail() {
       const prods = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product));
       setProducts(prods);
       setLoading(false);
+    }, (error) => {
+      handleFirestoreError(error, OperationType.LIST, `products (category: ${category.name})`);
     });
     return () => unsubscribe();
   }, [category]);

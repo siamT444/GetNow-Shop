@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { db, collection, onSnapshot, query, where } from '../firebase';
+import { db, collection, onSnapshot, query, where, handleFirestoreError, OperationType } from '../firebase';
 import { Product } from '../types';
 import ProductCard from '../components/ProductCard';
 import { Clock } from 'lucide-react';
@@ -14,6 +14,8 @@ export default function Deals() {
       const prods = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product));
       setProducts(prods);
       setLoading(false);
+    }, (error) => {
+      handleFirestoreError(error, OperationType.LIST, 'products (deals)');
     });
     return () => unsubscribe();
   }, []);

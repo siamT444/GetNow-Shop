@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Star, Check, X, ShoppingCart, ArrowLeft, ExternalLink, Info, MessageSquare, AlertCircle } from 'lucide-react';
-import { db, doc, onSnapshot } from '../firebase';
+import { db, doc, onSnapshot, handleFirestoreError, OperationType } from '../firebase';
 import { Product } from '../types';
 import { cn } from '../lib/utils';
 
@@ -19,6 +19,8 @@ export default function ProductDetail() {
         setProduct(null);
       }
       setLoading(false);
+    }, (error) => {
+      handleFirestoreError(error, OperationType.GET, `products/${id}`);
     });
     return () => unsubscribe();
   }, [id]);

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { auth, db, googleProvider, signInWithPopup, signOut, onAuthStateChanged, collection, getDocs, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query, where, User } from '../firebase';
+import { auth, db, googleProvider, signInWithPopup, signOut, onAuthStateChanged, collection, getDocs, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query, where, User, handleFirestoreError, OperationType } from '../firebase';
 import { Plus, Edit2, Trash2, LogOut, LogIn, Shield, Package, LayoutDashboard, ExternalLink, Save, X } from 'lucide-react';
 import { Product } from '../types';
 import { cn } from '../lib/utils';
@@ -69,8 +69,7 @@ export default function Admin() {
       setIsFormOpen(false);
       setEditingProduct(null);
     } catch (error) {
-      console.error("Save failed", error);
-      alert("Failed to save product. Check console for details.");
+      handleFirestoreError(error, OperationType.WRITE, 'products');
     }
   };
 
@@ -79,7 +78,7 @@ export default function Admin() {
       try {
         await deleteDoc(doc(db, 'products', id));
       } catch (error) {
-        console.error("Delete failed", error);
+        handleFirestoreError(error, OperationType.DELETE, `products/${id}`);
       }
     }
   };

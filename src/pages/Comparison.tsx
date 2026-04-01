@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Star, Check, X, ExternalLink } from 'lucide-react';
-import { db, collection, onSnapshot } from '../firebase';
+import { db, collection, onSnapshot, handleFirestoreError, OperationType } from '../firebase';
 import { Product } from '../types';
 
 export default function Comparison() {
@@ -12,6 +12,8 @@ export default function Comparison() {
       const prods = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product));
       setProducts(prods);
       setLoading(false);
+    }, (error) => {
+      handleFirestoreError(error, OperationType.LIST, 'products');
     });
     return () => unsubscribe();
   }, []);

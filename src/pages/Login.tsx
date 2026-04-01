@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { auth, googleProvider, signInWithPopup, onAuthStateChanged } from '../firebase';
-import { LogIn, ShoppingCart, ShieldCheck, Zap, ArrowRight, AlertCircle } from 'lucide-react';
+import { LogIn, ShoppingCart, ShieldCheck, Zap, ArrowRight, AlertCircle, ExternalLink } from 'lucide-react';
 import { motion } from 'motion/react';
 
 export default function Login() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isIframe, setIsIframe] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const from = (location.state as any)?.from?.pathname || "/";
 
   useEffect(() => {
+    setIsIframe(window.self !== window.top);
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         navigate(from, { replace: true });
@@ -20,19 +22,26 @@ export default function Login() {
     return () => unsubscribe();
   }, [navigate, from]);
 
+  const handleOpenNewTab = () => {
+    window.open(window.location.href, '_blank');
+  };
+
   const handleLogin = async () => {
     setLoading(true);
     setError(null);
     try {
+      console.log("Attempting sign-in with popup...");
       await signInWithPopup(auth, googleProvider);
     } catch (err: any) {
-      console.error("Login failed", err);
+      console.error("Login Error Details:", err);
       if (err.code === 'auth/popup-blocked') {
-        setError("The sign-in popup was blocked by your browser. Please allow popups for this site.");
+        setError("The sign-in popup was blocked. Please allow popups or try opening the app in a new tab.");
       } else if (err.code === 'auth/unauthorized-domain') {
-        setError("This domain is not authorized in Firebase. Please add this domain to your Firebase Auth settings.");
+        setError(`Domain not authorized. Please add "${window.location.hostname}" to your Firebase Authorized Domains.`);
+      } else if (err.code === 'auth/popup-closed-by-user') {
+        setError("Sign-in window was closed before completion.");
       } else {
-        setError(err.message || "An unexpected error occurred during sign-in.");
+        setError(`${err.code || 'Error'}: ${err.message}`);
       }
     } finally {
       setLoading(false);
@@ -100,9 +109,24 @@ export default function Login() {
           )}
         </button>
 
-        <p className="mt-8 text-xs text-gray-400">
-          By signing in, you agree to our Terms of Service and Privacy Policy.
-        </p>
+        {isIframe && (
+          <div className="mt-6">
+            <p className="text-xs text-gray-400 mb-3">Having trouble signing in inside the preview?</p>
+            <button 
+              onClick={handleOpenNewTab}
+              className="w-full py-3 bg-white text-orange-500 border border-orange-200 font-bold rounded-xl hover:bg-orange-50 transition-all flex items-center justify-center text-sm"
+            >
+              <ExternalLink className="mr-2 h-4 w-4" /> Open App in New Tab
+            </button>
+          </div>
+        )}
+
+        <div className="mt-8 pt-8 border-t border-gray-50 text-left">
+          <h4 className="text-[10px] font-black text-gray-300 uppercase tracking-widest mb-2">Debug Info</h4>
+          <p className="text-[10px] text-gray-400 font-mono break-all">
+            Domain: {window.location.hostname}
+          </p>
+        </div>
       </motion.div>
       
       <Link to="/" className="mt-8 text-gray-500 font-medium flex items-center hover:text-orange-500 transition-colors">

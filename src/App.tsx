@@ -9,31 +9,34 @@ import Deals from './pages/Deals';
 import Comparison from './pages/Comparison';
 import Admin from './pages/Admin';
 import Login from './pages/Login';
+import ErrorBoundary from './components/ErrorBoundary';
 
 export default function App() {
   return (
-    <Router>
-      <div className="flex flex-col min-h-screen bg-white font-sans selection:bg-orange-100 selection:text-orange-900">
-        <Navbar />
-        <main className="flex-grow">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/product/:id" element={<ProductDetail />} />
-            <Route path="/categories" element={<Categories />} />
-            <Route path="/category/:slug" element={<CategoryDetail />} />
-            <Route path="/deals" element={<Deals />} />
-            <Route path="/comparison" element={<Comparison />} />
-            <Route path="/admin" element={<Admin />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/trending" element={<Home />} />
-            <Route path="/blog" element={<Home />} />
-            <Route path="/about" element={<Home />} />
-            <Route path="/contact" element={<Home />} />
-            <Route path="/privacy" element={<Home />} />
-          </Routes>
-        </main>
-        <Footer />
-      </div>
-    </Router>
+    <ErrorBoundary>
+      <Router>
+        <div className="flex flex-col min-h-screen bg-white font-sans selection:bg-orange-100 selection:text-orange-900">
+          <Navbar />
+          <main className="flex-grow">
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/product/:id" element={<ProductDetail />} />
+              <Route path="/categories" element={<Categories />} />
+              <Route path="/category/:slug" element={<CategoryDetail />} />
+              <Route path="/deals" element={<Deals />} />
+              <Route path="/comparison" element={<Comparison />} />
+              <Route path="/admin" element={<Admin />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/trending" element={<Home />} />
+              <Route path="/blog" element={<Home />} />
+              <Route path="/about" element={<Home />} />
+              <Route path="/contact" element={<Home />} />
+              <Route path="/privacy" element={<Home />} />
+            </Routes>
+          </main>
+          <Footer />
+        </div>
+      </Router>
+    </ErrorBoundary>
   );
 }
